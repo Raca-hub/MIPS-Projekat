@@ -1,0 +1,8 @@
+# Rezultati detekcije promena
+data/processed/*
+results/diff_masks/
+*.geotiff
+*.tiff
+
+# Ako koristiš Jupyter Notebooks za testiranje modela
+.ipynb_checkpoints/
