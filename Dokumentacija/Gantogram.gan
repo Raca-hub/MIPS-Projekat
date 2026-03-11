@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2026-03-31" view-index="0" gantt-divider-location="351" resource-divider-location="300" version="3.3.3300" locale="en_US">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="200" order="0"/>
+        <field id="tpd4" name="Begin date" width="75" order="1"/>
+        <field id="tpd5" name="End date" width="75" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <option id="color.recent"><![CDATA[#99ff99 #99ff66]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" uid="54984910fd6b441fab4e94d4ef0ea75e" name="Planiranje i Analiza" color="#99ff99" meeting="false" start="2026-04-01" duration="18" complete="0" thirdDate="2026-04-01" thirdDate-constraint="0" priority="2" expand="false">
+            <task id="7" uid="4ef22362c2c54f1baae10c8654f85348" name="Definisanje tipova zemljišta" color="#99ff66" meeting="false" start="2026-04-01" duration="6" complete="0" thirdDate="2026-03-26" thirdDate-constraint="0" expand="true"/>
+            <task id="6" uid="a6e956d27b8a4cab8cec7d7a9d9a58a5" name="Arhitektura Sistema" color="#99ff99" meeting="false" start="2026-04-01" duration="6" complete="0" thirdDate="2026-03-26" thirdDate-constraint="0" expand="true"/>
+            <task id="5" uid="122a58ce974a40b3bf543f0d7cc89578" name="Razvojno okruženje i Git" meeting="false" start="2026-04-09" duration="3" complete="0" thirdDate="2026-03-26" thirdDate-constraint="0" expand="true"/>
+            <task id="4" uid="b4b32005f0414a1ebb149c842960c594" name="Pragovi preciznosti za AI" meeting="false" start="2026-04-09" duration="3" complete="0" thirdDate="2026-03-26" thirdDate-constraint="0" expand="true"/>
+            <task id="3" uid="5f551a6832d0424ea71ff55318137e2b" name="Definisanje opreme i potrebnih komponenti" meeting="false" start="2026-04-13" duration="2" complete="0" thirdDate="2026-03-26" thirdDate-constraint="0" expand="true"/>
+            <task id="2" uid="d11971e674b5406ea246096518740fbb" name="Nabavka potrebnih komponenti" meeting="false" start="2026-04-13" duration="10" complete="0" thirdDate="2026-03-26" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="8" uid="135dc7c114c04ef9bbe00310b68d9978" name="Prirema i Obrada" meeting="false" start="2026-04-01" duration="36" complete="0" expand="false">
+            <task id="9" uid="65589f2ab3f142a1a2d8bb01e9ec6b94" name="Projektovanje sistema" meeting="false" start="2026-04-27" duration="4" complete="0" thirdDate="2026-03-20" thirdDate-constraint="0" expand="true"/>
+            <task id="10" uid="2b8ea72ee4f24f93bb2bd042e26dfabc" name="Povezivanje fizičkih komponenti" meeting="false" start="2026-04-28" duration="7" complete="0" thirdDate="2026-03-20" thirdDate-constraint="0" expand="true"/>
+            <task id="11" uid="eb35bcaffbd64c9fbde1023af86ca3ad" name="Prikupljanje dron snimaka" meeting="false" start="2026-04-01" duration="23" complete="0" thirdDate="2026-03-20" thirdDate-constraint="0" expand="true"/>
+            <task id="12" uid="9cebdc3d747d4bcb8341722472ae1dc0" name="Pre-processing slika" meeting="false" start="2026-05-04" duration="4" complete="0" thirdDate="2026-03-20" thirdDate-constraint="0" expand="true"/>
+            <task id="13" uid="6db27a33d5dd4d47b325d55de69c2a8c" name="Modifikacija snimaka na manje delove" meeting="false" start="2026-05-08" duration="3" complete="0" thirdDate="2026-03-20" thirdDate-constraint="0" expand="true"/>
+            <task id="14" uid="28c878ab02c54702928675912f0ddfc1" name="Označavanje promena" meeting="false" start="2026-05-14" duration="5" complete="0" thirdDate="2026-03-20" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="15" uid="0f5faf8d92e24f3d95456c797ffe13cd" name="Registracija i Poravnanje slika" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="false">
+            <task id="16" uid="cd868a70f3d54370979a72f7d38d7f80" name="Detekcija ključnih tačaka" meeting="false" start="2026-03-31" duration="1" complete="0" expand="true"/>
+            <task id="17" uid="9d17e5ab3c9842e5ba84bcfb61ab79a7" name="Podudaranja i povezivanje slika" meeting="false" start="2026-03-31" duration="1" complete="0" expand="true"/>
+            <task id="18" uid="afead8532c3e41c7a9ad668168ecb3fb" name="Homografija i Warping" meeting="false" start="2026-03-31" duration="1" complete="0" expand="true"/>
+            <task id="19" uid="d86e8652198a4b18b6fda512ea0c15d9" name="Validacija poravnanja" meeting="false" start="2026-03-31" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="20" uid="98c0eacd227843258f6dcf0e54d1db2c" name="AI i Analitika" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="false">
+            <task id="21" uid="bd185ad3c4f04b6abd843d67b9bdfa37" name="Integracija modela" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+            <task id="22" uid="dda9573790db4bfdb798a28a3c5dccea" name="Generisanje maski" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+            <task id="23" uid="ef6cc25af2404706a9b1b60a294e2959" name="Logika detekcije razlika" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+            <task id="24" uid="640dcd16af4845fc9fcb788e9b5933f1" name="Statistički proračuni" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="25" uid="89966d91ea2e47d3a65daca6edf0efe5" name="Optimizacija i finalizacija" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true">
+            <task id="26" uid="1b3de4c235004af2a7b8c04450c293fa" name="Portovanje na ARM" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+            <task id="27" uid="c3badb50c8d241e1b0c12b01ae33eec0" name="Jedinično testiranje" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+            <task id="28" uid="fd1bf421d7b84c32b2ab4e2a7aacd3a0" name="Testiranje perfomansi" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+            <task id="29" uid="4f2931628cec4f76a76fe05ad805e510" name="Integraciono testiranje" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+            <task id="30" uid="9fe13d95d2914b1695f2c70554e82b15" name="Izrada dokumentacije" meeting="false" start="2026-03-31" duration="1" complete="0" thirdDate="2026-03-31" thirdDate-constraint="0" expand="true"/>
+        </task>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
