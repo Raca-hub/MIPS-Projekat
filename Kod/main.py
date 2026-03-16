@@ -4,10 +4,10 @@ import sys
 from datetime import datetime
 
 # Uvoz tvojih modula
-from registration import ImageRegistration
-from segmentation import LandSegmentation
-from change_analysis import detect_changes
-from visualization import create_visual_report
+from src.registration import ImageRegistration
+from src.segmentation import LandSegmentation
+from src.change_analysis import detect_changes
+from src.visualization import create_visual_report
 
 def run_pipeline(img_path_old, img_path_new, output_dir="results"):
     """

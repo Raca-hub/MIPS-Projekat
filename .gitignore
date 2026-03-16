@@ -1,8 +1,39 @@
-# Rezultati detekcije promena
-data/processed/*
-results/diff_masks/
-*.geotiff
-*.tiff
+# Python - privremeni fajlovi
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
 
-# Ako koristiš Jupyter Notebooks za testiranje modela
-.ipynb_checkpoints/
+# Datasetovi (Preveliki za Git)
+data/
+datasets/
+*.zip
+*.tar.gz
+
+# Modeli i težine (Weight fajlovi su često >100MB)
+*.pt
+*.pth
+*.weights
+*.h5
+*.onnx
+
+# Logovi i rezultati obrade
+logs/
+results/
+*.mp4
+*.png
+*.jpg
+!src/static/*.png  # Izuzetak ako imaš neke ikonice sistema
+
+# IDE specifični fajlovi
+.vscode/
+.idea/
+
+# OS specifični fajlovi
+.DS_Store
+Thumbs.db
+# Python - privremeni fajlovi
+kod/venv/
+__pycache__/
