@@ -64,12 +64,12 @@ python main.py
 
     Matplotlib: Za generisanje statističkih izveštaja i vizuelni prikaz razlika.
 
-👥 Članovi tima (Grupa 3)
+👥 Članovi tima
 
-    [Tvoje Ime i Prezime] - [Broj Indeksa]
+    Aleksandar Vuletić 36/2022
 
-    [Ime Člana 2] - [Broj Indeksa]
+    Mihailo Obradović 79/2022
 
-    [Ime Člana 3] - [Broj Indeksa]
+    Aleksa Grujić 41/2022
 
-    [Ime Člana 4] - [Broj Indeksa]
+    Nemanja Aleksić 27/2022
