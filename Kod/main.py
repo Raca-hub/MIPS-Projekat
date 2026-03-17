@@ -8,6 +8,22 @@ from src.registration import ImageRegistration
 from src.segmentation import LandSegmentation
 from src.change_analysis import detect_changes
 from src.visualization import create_visual_report
+try:
+    import torch
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
+
+def initialize_engine(model_path):
+    if HAS_TORCH and model_path.endswith(".pth"):
+        print("Korišćenje PyTorch engine-a (Desktop mode)")
+        from src.segmentation import LandSegmentation
+        return LandSegmentation(model_path)
+    else:
+        print("Korišćenje ONNX Lite engine-a (ARM/Mobile mode)")
+        from src.inference_lite import LandSegmentationLite
+        onnx_path = model_path.replace(".pth", ".onnx")
+        return LandSegmentationLite(onnx_path)
 
 def run_pipeline(img_path_old, img_path_new, output_dir="results"):
     """
