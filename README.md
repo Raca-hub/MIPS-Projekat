@@ -12,8 +12,8 @@ Sistem je dizajniran modularno i optimizovan za pokretanje na **ARM platformama*
 
 ```text
 MIPS-Projekat/
-├── dokumentacija/       # WBS, Gantt dijagrami i PDF izveštaj
-└── kod/                 # Izvorni kod aplikacije
+├── Dokumentacija/       # WBS, Gantt dijagrami i PDF izveštaj
+└── Kod/                 # Izvorni kod aplikacije
     ├── data/            # Ulazni snimci sa drona (T1 i T2 slike)
     ├── src/             # Logički moduli sistema
     │   ├── registration.py    # Poravnanje (Matching) slika
@@ -32,7 +32,7 @@ Otvorite terminal (PowerShell ili CMD) i kucajte:
 Bash
 
 git clone https://github.com/Raca-hub/MIPS-Projekat
-cd MIPS-Projekat/kod
+cd MIPS-Projekat/Kod
 
 2. Kreiranje i aktivacija virtuelnog okruženja (venv)
 PowerShell
