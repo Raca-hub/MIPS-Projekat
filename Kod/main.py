@@ -56,7 +56,7 @@ def run_pipeline(img_path_old, img_path_new, output_dir="results"):
 
     # 4. Generisanje maski tipova zemljišta (WBS 4.2)
     # Opciono: mozes segmentisati obe slike da vidiš ŠTA se tačno promenilo (npr. šuma u beton)
-    land_mask_new = seg_engine.predict(img_path_new)
+    land_mask_new = seg_engine.process_large_image(img_path_new, tile_size=256)
     colored_land_mask = seg_engine.colorize_mask(land_mask_new)
 
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Faza 5: Generisanje izveštaja...")

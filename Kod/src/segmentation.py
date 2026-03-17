@@ -5,6 +5,7 @@ import segmentation_models_pytorch as smp
 from torchvision import transforms
 
 class LandSegmentation:
+    
     def __init__(self, model_path=None):
         # Definišemo arhitekturu (WBS 1.2 / 4.1)
         # U-Net sa ResNet34 backbone-om je odličan balans brzine i preciznosti
@@ -28,6 +29,47 @@ class LandSegmentation:
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
+    def process_large_image(self, image_path, tile_size=256):
+        """
+        Deli veliku sliku na manje delove (tiles), 
+        procesira svaki i spaja ih nazad u jednu masku.
+        """
+        full_img = cv2.imread(image_path)
+        h, w, _ = full_img.shape
+        
+        # Kreiramo praznu masku istih dimenzija (samo visina i širina)
+        full_mask = np.zeros((h, w), dtype=np.uint8)
+
+        # Prolazimo kroz sliku u koracima veličine tile_size
+        for y in range(0, h, tile_size):
+            for x in range(0, w, tile_size):
+                # Određivanje granica isečka (pazimo na ivice slike)
+                y_end = min(y + tile_size, h)
+                x_end = min(x + tile_size, w)
+                
+                tile = full_img[y:y_end, x:x_end]
+                
+                # Ako je isečak manji od 256x256 (na ivicama), dopunimo ga (padding) ili resize
+                if tile.shape[0] != tile_size or tile.shape[1] != tile_size:
+                    tile_resized = cv2.resize(tile, (tile_size, tile_size))
+                else:
+                    tile_resized = tile
+
+                # Predikcija za taj konkretan isečak
+                # (Koristimo tvoju postojeću transformaciju i model)
+                input_tensor = self.transform(tile_resized).unsqueeze(0).to(self.device)
+                with torch.no_grad():
+                    output = self.model(input_tensor)
+                    tile_mask = torch.argmax(output, dim=1).squeeze(0).cpu().numpy()
+
+                # Vraćanje isečka na originalnu veličinu ako je bilo resizing-a
+                if tile.shape[0] != tile_size or tile.shape[1] != tile_size:
+                    tile_mask = cv2.resize(tile_mask, (x_end - x, y_end - y), interpolation=cv2.INTER_NEAREST)
+
+                # Upisivanje u veliku masku
+                full_mask[y:y_end, x:x_end] = tile_mask
+
+        return full_mask
 
     def predict(self, image_path):
         """
