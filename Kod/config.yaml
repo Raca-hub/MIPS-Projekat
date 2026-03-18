@@ -1,0 +1,67 @@
+model:
+  architecture: "Unet"
+  encoder: "resnet34"
+  encoder_weights: "imagenet"
+  in_channels: 3
+  num_classes: 4
+
+classes:
+  0: "nepoznato"
+  1: "suma"
+  2: "beton"
+  3: "polje"
+
+class_colors:
+  0: [0, 0, 0]
+  1: [0, 255, 0]
+  2: [128, 128, 128]
+  3: [255, 255, 0]
+
+data:
+  tile_size: 256
+  tile_overlap: 32
+  train_split: 0.8
+  seed: 42
+  raw_images_dir: "data/raw/images"
+  raw_masks_dir: "data/raw/masks"
+  processed_dir: "data/processed"
+  tiles_images_dir: "data/processed/images"
+  tiles_masks_dir: "data/processed/masks"
+
+augmentation:
+  horizontal_flip: true
+  vertical_flip: true
+  rotation_limit: 45
+  brightness_contrast: true
+  random_crop: true
+
+training:
+  epochs: 50
+  batch_size: 8
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  num_workers: 0
+  pin_memory: true
+  loss_function: "combo"
+  dice_weight: 0.5
+  ce_weight: 0.5
+  scheduler: "reduce_on_plateau"
+  scheduler_patience: 5
+  scheduler_factor: 0.5
+  min_lr: 0.000001
+  early_stopping_patience: 10
+
+paths:
+  models_dir: "models"
+  best_model_pth: "models/best_model.pth"
+  best_model_onnx: "models/best_model.onnx"
+  results_dir: "results"
+  logs_dir: "logs"
+
+evaluation:
+  iou_threshold: 0.5
+  conf_matrix: true
+
+inference:
+  device: "auto"
+  use_onnx_on_arm: true
