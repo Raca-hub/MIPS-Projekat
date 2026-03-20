@@ -7,8 +7,6 @@ venv/
 ENV/
 
 # Datasetovi (Preveliki za Git)
-data/
-datasets/
 *.zip
 *.tar.gz
 
@@ -20,12 +18,6 @@ datasets/
 *.onnx
 
 # Logovi i rezultati obrade
-logs/
-results/
-*.mp4
-*.png
-*.jpg
-!src/static/*.png  # Izuzetak ako imaš neke ikonice sistema
 
 # IDE specifični fajlovi
 .vscode/

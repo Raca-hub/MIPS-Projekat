@@ -1,0 +1,13 @@
+Evaluacioni izveštaj
+Model: models/best_model.pth
+Broj tile-ova: 4
+
+mIoU: 0.4966
+Pixel Accuracy: 0.7057
+
+Klasa                IoU
+-------------------------
+nepoznato         0.4755
+suma              0.4448
+beton             0.6847
+polje             0.3812
