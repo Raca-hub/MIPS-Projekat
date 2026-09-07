@@ -226,5 +226,3 @@ Iz matrice se izvode imenovane metrike: `urbanization` (šuma/polje→beton), `d
 - Mihailo Obradović 79/2022 — AI / mašinsko učenje
 - Aleksa Grujić 41/2022 — obrada slike i analiza promena
 - Nemanja Aleksić 27/2022 — deployment / edge (ARM)
-
-Detaljna podela i priprema za odbranu: `Dokumentacija/TIM.md`, `Dokumentacija/SCRUM.md`, `Dokumentacija/priprema-*.md`.
