@@ -1,5 +1,7 @@
 model:
   architecture: "Unet"
+  # mobilenet_v2 je 3-5x manji i brzi od resnet34 - preporuceno za slab/mali GPU ili CPU.
+  # Za jak GPU (npr. RTX 4060+) mozes vratiti na "resnet34" za nesto bolji mIoU.
   encoder: "resnet34"
   encoder_weights: "imagenet"
   in_channels: 3
@@ -37,11 +39,15 @@ augmentation:
 
 training:
   epochs: 50
+  # Manji batch_size + accumulation_steps drzi memorijski otisak nizak dok
+  # zadrzava efektivni batch (batch_size * accumulation_steps = 8, kao pre).
   batch_size: 8
+  accumulation_steps: 1
+  use_amp: true          # mesovita preciznost - manje VRAM-a, brzi trening na CUDA GPU-u
   learning_rate: 0.0001
   weight_decay: 0.0001
   num_workers: 0
-  pin_memory: true
+  pin_memory: true        # automatski se iskljucuje na CPU (videti train.py)
   loss_function: "combo"
   dice_weight: 0.5
   ce_weight: 0.5

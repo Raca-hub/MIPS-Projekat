@@ -1,19 +1,32 @@
+import os
 import torch
 import cv2
 import numpy as np
+import yaml
 import segmentation_models_pytorch as smp
 from torchvision import transforms
 
+_DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.yaml")
+
+
 class LandSegmentation:
-    
-    def __init__(self, model_path=None):
-        # Definišemo arhitekturu (WBS 1.2 / 4.1)
-        # U-Net sa ResNet34 backbone-om je odličan balans brzine i preciznosti
+
+    def __init__(self, model_path=None, config_path=_DEFAULT_CONFIG_PATH):
+        # Arhitektura se sada čita iz config.yaml (WBS 1.2 / 4.1) umesto da bude
+        # hardkodirana, tako da promena "encoder" u config.yaml stvarno ima efekta.
+        # Za slab/bez GPU-a preporučeno: encoder: "mobilenet_v2" (3-5x manje parametara
+        # i memorije od resnet34, uz malo niži mIoU).
+        m_cfg = {"encoder": "resnet34", "encoder_weights": "imagenet", "in_channels": 3, "num_classes": 4}
+        if config_path and os.path.exists(config_path):
+            with open(config_path, "r") as f:
+                full_cfg = yaml.safe_load(f)
+            m_cfg.update(full_cfg.get("model", {}))
+
         self.model = smp.Unet(
-            encoder_name="resnet34",        
-            encoder_weights="imagenet",     
-            in_channels=3,                  
-            classes=4,  # npr. 0: nepoznato, 1: šuma, 2: beton, 3: trava (WBS 1.1)
+            encoder_name=m_cfg["encoder"],
+            encoder_weights=m_cfg["encoder_weights"],
+            in_channels=m_cfg["in_channels"],
+            classes=m_cfg["num_classes"],
         )
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)
@@ -92,11 +105,13 @@ class LandSegmentation:
         """
         Pretvaranje numeričke maske u boju radi vizuelne provere.
         """
+        # Boje su u BGR redosledu (OpenCV konvencija) jer se rezultat čuva preko
+        # cv2.imwrite - RGB žuta [255,255,0] bi se inače prikazala kao cijan.
         color_map = {
             0: [0, 0, 0],       # Nepoznato - Crno
-            1: [0, 255, 0],     # Šuma - Zeleno
-            2: [128, 128, 128], # Beton/Put - Sivo
-            3: [255, 255, 0]    # Polje - Žuto
+            1: [0, 255, 0],     # Šuma - Zeleno (simetrično u BGR/RGB)
+            2: [128, 128, 128], # Beton/Put - Sivo (simetrično u BGR/RGB)
+            3: [0, 255, 255]    # Polje - Žuto (BGR: B=0, G=255, R=255)
         }
         
         h, w = mask.shape

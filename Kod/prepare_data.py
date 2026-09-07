@@ -7,16 +7,23 @@ from pathlib import Path
 
 def create_folder_structure(config_path="config.yaml"):
     """
-    Kreira kompletnu strukturu foldera projekta ako ne postoji.
+    Kreira kompletnu strukturu foldera projekta ako ne postoji, na osnovu
+    putanja iz config-a (podrzava i alternativni config, npr. config_demo.yaml).
     """
+    with open(config_path, 'r') as f:
+        cfg = yaml.safe_load(f)
+
+    d_cfg = cfg['data']
+    p_cfg = cfg['paths']
+
     folders = [
-        "data/raw/images",
-        "data/raw/masks",
-        "data/processed/images",
-        "data/processed/masks",
-        "models",
-        "results",
-        "logs",
+        d_cfg['raw_images_dir'],
+        d_cfg['raw_masks_dir'],
+        d_cfg['tiles_images_dir'],
+        d_cfg['tiles_masks_dir'],
+        p_cfg['models_dir'],
+        p_cfg['results_dir'],
+        p_cfg['logs_dir'],
         "src"
     ]
     for folder in folders:
@@ -144,8 +151,13 @@ def prepare_all(config_path="config.yaml"):
 
 
 if __name__ == "__main__":
+    import sys
+    # Podrzava i pozivanje sa posebnim config fajlom, npr:
+    #   python prepare_data.py config_demo.yaml
+    config_arg = sys.argv[1] if len(sys.argv) > 1 else "config.yaml"
+
     print("=== Priprema strukture foldera ===")
-    create_folder_structure()
+    create_folder_structure(config_arg)
 
     print("\n=== Sekanje slika na tile-ove ===")
-    prepare_all()
+    prepare_all(config_arg)

@@ -115,7 +115,8 @@ def create_dataloaders(config_path="config.yaml"):
     seed = cfg['data']['seed']
     batch_size = cfg['training']['batch_size']
     num_workers = cfg['training']['num_workers']
-    pin_memory = cfg['training']['pin_memory']
+    # pin_memory ima smisla samo uz CUDA GPU; na CPU-u samo trosi RAM bez koristi.
+    pin_memory = cfg['training']['pin_memory'] and torch.cuda.is_available()
 
     # Ceo dataset (bez augmentacije za početak, dodajemo posle splita)
     full_dataset = LandDataset(images_dir, masks_dir, augment=False)

@@ -1,0 +1,73 @@
+{
+  "change_ratio_percent": 11.17,
+  "unchanged_pixels": 1389947,
+  "changed_pixels": 174703,
+  "urbanization_pixels": 130084,
+  "deforestation_pixels": 0,
+  "revegetation_pixels": 0,
+  "class_names": [
+    "nepoznato",
+    "suma",
+    "beton",
+    "polje"
+  ],
+  "transitions": [
+    {
+      "from": "polje",
+      "to": "beton",
+      "pixels": 130084,
+      "percentage": 8.31
+    },
+    {
+      "from": "beton",
+      "to": "polje",
+      "pixels": 43546,
+      "percentage": 2.78
+    },
+    {
+      "from": "polje",
+      "to": "nepoznato",
+      "pixels": 1068,
+      "percentage": 0.07
+    },
+    {
+      "from": "beton",
+      "to": "nepoznato",
+      "pixels": 4,
+      "percentage": 0.0
+    },
+    {
+      "from": "nepoznato",
+      "to": "polje",
+      "pixels": 1,
+      "percentage": 0.0
+    }
+  ],
+  "transition_matrix": [
+    [
+      2258,
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      1315566,
+      43546
+    ],
+    [
+      1068,
+      0,
+      130084,
+      72123
+    ]
+  ],
+  "ssim_change_percent": 63.51
+}

@@ -34,6 +34,58 @@ def create_visual_report(img_old, img_new, change_mask, percentage):
     
     return combined
 
+def create_transition_heatmap(mask_t1, mask_t2, highlight_transitions=None):
+    """
+    Za razliku od create_visual_report (koja boji SVE detektovane SSIM promene
+    istom crvenom bojom), ova funkcija boji SAMO piksele koji su promenili
+    KLASU, po tipu tranzicije - direktna vizuelizacija "praćenja promene tipa
+    zemljišta".
+
+    highlight_transitions: lista (from_class_id, to_class_id, boja_bgr).
+    Podrazumevano prati klase iz config.yaml (0=nepoznato, 1=suma, 2=beton, 3=polje).
+    """
+    if highlight_transitions is None:
+        highlight_transitions = [
+            (1, 2, (0, 0, 255)),     # šuma -> beton = crvena (urbanizacija/krčenje)
+            (3, 2, (0, 128, 255)),   # polje -> beton = narandžasta (urbanizacija)
+            (2, 1, (0, 255, 0)),     # beton -> šuma = zelena (ozelenjavanje)
+            (3, 1, (0, 255, 0)),     # polje -> šuma = zelena (pošumljavanje)
+        ]
+
+    h, w = mask_t1.shape
+    heatmap = np.full((h, w, 3), 40, dtype=np.uint8)  # tamno-siva = bez promene tipa
+
+    for c1, c2, color in highlight_transitions:
+        heatmap[(mask_t1 == c1) & (mask_t2 == c2)] = color
+
+    return heatmap
+
+
+def plot_transition_matrix(matrix, class_names, save_path="results/transition_matrix.png"):
+    """
+    Vizuelni prikaz matrice prelaza klasa (T1 vs T2), u stilu confusion matrice,
+    za ubacivanje direktno u dokumentaciju/izveštaj.
+    """
+    fig, ax = plt.subplots(figsize=(6, 5))
+    im = ax.imshow(matrix, cmap="YlOrRd")
+    ax.set_xticks(range(len(class_names)))
+    ax.set_yticks(range(len(class_names)))
+    ax.set_xticklabels(class_names)
+    ax.set_yticklabels(class_names)
+    ax.set_xlabel("T2 (novo stanje)")
+    ax.set_ylabel("T1 (staro stanje)")
+    ax.set_title("Matrica prelaza tipova zemljišta")
+
+    for i in range(len(class_names)):
+        for j in range(len(class_names)):
+            ax.text(j, i, str(matrix[i, j]), ha="center", va="center", color="black", fontsize=8)
+
+    fig.colorbar(im, ax=ax, label="Broj piksela")
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
+
+
 def plot_class_distribution(stats_dict):
     """
     Dodatna vizualizacija za dokumentaciju (WBS 5.5).

@@ -64,23 +64,37 @@ def compute_mean_iou(preds, targets, num_classes):
     return np.mean(valid) if valid else 0.0
 
 
-def train_one_epoch(seg_engine, loader, optimizer, criterion, device):
+def train_one_epoch(seg_engine, loader, optimizer, criterion, device,
+                     use_amp=False, scaler=None, accumulation_steps=1):
     seg_engine.model.train()
     total_loss = 0.0
     total_miou = 0.0
     num_classes = seg_engine.model.segmentation_head[0].out_channels
 
+    optimizer.zero_grad()
+
     for batch_idx, (images, masks) in enumerate(loader):
-        images = images.to(device)
-        masks = masks.to(device)
+        images = images.to(device, non_blocking=True)
+        masks = masks.to(device, non_blocking=True)
 
-        optimizer.zero_grad()
-        outputs = seg_engine.model(images)
-        loss = criterion(outputs, masks)
-        loss.backward()
-        optimizer.step()
+        with torch.autocast(device_type=device.type, enabled=use_amp):
+            outputs = seg_engine.model(images)
+            loss = criterion(outputs, masks) / accumulation_steps
 
-        total_loss += loss.item()
+        if use_amp:
+            scaler.scale(loss).backward()
+        else:
+            loss.backward()
+
+        if (batch_idx + 1) % accumulation_steps == 0 or (batch_idx + 1) == len(loader):
+            if use_amp:
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                optimizer.step()
+            optimizer.zero_grad()
+
+        total_loss += loss.item() * accumulation_steps
 
         with torch.no_grad():
             preds = torch.argmax(outputs, dim=1)
@@ -88,12 +102,17 @@ def train_one_epoch(seg_engine, loader, optimizer, criterion, device):
             total_miou += miou
 
         if (batch_idx + 1) % 10 == 0:
-            print(f"  Batch [{batch_idx+1}/{len(loader)}] Loss: {loss.item():.4f} | mIoU: {miou:.4f}")
+            print(f"  Batch [{batch_idx+1}/{len(loader)}] Loss: {loss.item()*accumulation_steps:.4f} | mIoU: {miou:.4f}")
+
+        # Oslobađanje memorije - bitno na slabim GPU-ovima sa malo VRAM-a
+        if device.type == "cuda":
+            del outputs
+            torch.cuda.empty_cache()
 
     return total_loss / len(loader), total_miou / len(loader)
 
 
-def validate(seg_engine, loader, criterion, device):
+def validate(seg_engine, loader, criterion, device, use_amp=False):
     seg_engine.model.eval()
     total_loss = 0.0
     total_miou = 0.0
@@ -101,16 +120,21 @@ def validate(seg_engine, loader, criterion, device):
 
     with torch.no_grad():
         for images, masks in loader:
-            images = images.to(device)
-            masks = masks.to(device)
+            images = images.to(device, non_blocking=True)
+            masks = masks.to(device, non_blocking=True)
 
-            outputs = seg_engine.model(images)
-            loss = criterion(outputs, masks)
+            with torch.autocast(device_type=device.type, enabled=use_amp):
+                outputs = seg_engine.model(images)
+                loss = criterion(outputs, masks)
             total_loss += loss.item()
 
             preds = torch.argmax(outputs, dim=1)
             miou = compute_mean_iou(preds.cpu(), masks.cpu(), num_classes)
             total_miou += miou
+
+            if device.type == "cuda":
+                del outputs
+                torch.cuda.empty_cache()
 
     return total_loss / len(loader), total_miou / len(loader)
 
@@ -138,7 +162,7 @@ def train(config_path="config.yaml"):
     best_model_path = p_cfg['best_model_pth']
 
     print("Inicijalizacija modela...")
-    seg_engine = LandSegmentation()
+    seg_engine = LandSegmentation(config_path=config_path)
     device = seg_engine.device
     print(f"Uredjaj: {device}")
 
@@ -169,15 +193,27 @@ def train(config_path="config.yaml"):
     patience_counter = 0
     early_stop_patience = t_cfg['early_stopping_patience']
 
+    # AMP (mixed precision) i gradient accumulation - podesivo u config.yaml,
+    # sa bezbednim podrazumevanim vrednostima ako ključevi još ne postoje.
+    # Preporuka za slab/mali GPU: use_amp: true, accumulation_steps: 4+ (uz manji batch_size).
+    use_amp = t_cfg.get('use_amp', False) and device.type == "cuda"
+    accumulation_steps = max(1, t_cfg.get('accumulation_steps', 1))
+    scaler = torch.amp.GradScaler('cuda', enabled=use_amp)
+
     print(f"\n{'='*50}")
-    print(f"Pocinjem trening: {t_cfg['epochs']} epoha, batch={t_cfg['batch_size']}")
+    print(f"Pocinjem trening: {t_cfg['epochs']} epoha, batch={t_cfg['batch_size']}"
+          f" (efektivni batch: {t_cfg['batch_size'] * accumulation_steps})")
+    print(f"AMP (mixed precision): {'DA' if use_amp else 'NE'} | Accumulation steps: {accumulation_steps}")
     print(f"{'='*50}\n")
 
     for epoch in range(1, t_cfg['epochs'] + 1):
         print(f"Epoha [{epoch}/{t_cfg['epochs']}]")
 
-        train_loss, train_miou = train_one_epoch(seg_engine, train_loader, optimizer, criterion, device)
-        val_loss, val_miou = validate(seg_engine, val_loader, criterion, device)
+        train_loss, train_miou = train_one_epoch(
+            seg_engine, train_loader, optimizer, criterion, device,
+            use_amp=use_amp, scaler=scaler, accumulation_steps=accumulation_steps
+        )
+        val_loss, val_miou = validate(seg_engine, val_loader, criterion, device, use_amp=use_amp)
 
         current_lr = optimizer.param_groups[0]['lr']
         scheduler.step(val_loss)
@@ -212,4 +248,7 @@ def train(config_path="config.yaml"):
 
 
 if __name__ == "__main__":
-    train()
+    # Podrzava i pozivanje sa posebnim config fajlom, npr:
+    #   python train.py config_demo.yaml
+    config_arg = sys.argv[1] if len(sys.argv) > 1 else "config.yaml"
+    train(config_path=config_arg)

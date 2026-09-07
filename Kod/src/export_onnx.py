@@ -1,22 +1,36 @@
 import torch
 import os
 import sys
+import yaml
 
 # Dodajemo koren projekta u putanju da bi Python video 'src' modul
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.segmentation import LandSegmentation
 
-def export_to_onnx():
+def export_to_onnx(config_path=None):
     """
-    Konvertuje istrenirani PyTorch model (.pth) u ONNX format 
+    Konvertuje istrenirani PyTorch model (.pth) u ONNX format
     radi optimizacije za ARM platforme (Jetson, Raspberry Pi).
+
+    config_path: putanja do config fajla (npr. "config_demo.yaml" za demo model).
+    Podrazumevano "config.yaml" (glavni, pun model) ako se ne prosledi.
+    Arhitektura (ResNet34/MobileNetV2) se čita iz ISTOG config-a kao putanje,
+    da se izbegne neusklađenost (npr. pokušaj učitavanja MobileNetV2 težina
+    u ResNet34 arhitekturu).
     """
-    # Definišemo putanje (relativno u odnosu na koren projekta)
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    model_path = os.path.join(base_dir, "models", "best_model.pth")
-    onnx_path = os.path.join(base_dir, "models", "best_model.onnx")
-    
+    if config_path is None:
+        config_path = os.path.join(base_dir, "config.yaml")
+    elif not os.path.isabs(config_path):
+        config_path = os.path.join(base_dir, config_path)
+
+    with open(config_path, 'r') as f:
+        cfg = yaml.safe_load(f)
+
+    model_path = os.path.join(base_dir, cfg['paths']['best_model_pth'])
+    onnx_path = os.path.join(base_dir, cfg['paths']['best_model_onnx'])
+
     # Provera da li folder za modele postoji
     models_dir = os.path.dirname(onnx_path)
     if not os.path.exists(models_dir):
@@ -28,9 +42,9 @@ def export_to_onnx():
         print(f"GRESKA: Model nije pronađen na putanji: {model_path}")
         return
 
-    # 1. Inicijalizacija i učitavanje modela
-    print("Učitavam PyTorch model...")
-    seg_engine = LandSegmentation(model_path=model_path)
+    # 1. Inicijalizacija i učitavanje modela (arhitektura iz ISTOG config-a)
+    print(f"Učitavam PyTorch model ({model_path}, config: {os.path.basename(config_path)})...")
+    seg_engine = LandSegmentation(model_path=model_path, config_path=config_path)
     model = seg_engine.model
     model.eval()
 
@@ -60,4 +74,7 @@ def export_to_onnx():
         print(f"❌ Došlo je do greške tokom eksporta: {e}")
 
 if __name__ == "__main__":
-    export_to_onnx()
+    # python export_onnx.py             -> izvozi glavni model (config.yaml)
+    # python export_onnx.py config_demo.yaml -> izvozi demo model
+    arg_config = sys.argv[1] if len(sys.argv) > 1 else None
+    export_to_onnx(config_path=arg_config)

@@ -197,10 +197,10 @@ def _save_visual_examples(loader, seg_engine, device, cfg, results_dir, num_exam
             img_np = np.clip((img_np * std + mean) * 255, 0, 255).astype(np.uint8)
             img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
 
-            # Bojenje maski
+            # Bojenje maski (color_map iz config.yaml je u RGB redosledu)
             gt_mask = masks.squeeze(0).numpy().astype(np.uint8)
-            gt_colored = _colorize(gt_mask, color_map)
-            pred_colored = _colorize(preds, color_map)
+            gt_colored = cv2.cvtColor(_colorize(gt_mask, color_map), cv2.COLOR_RGB2BGR)
+            pred_colored = cv2.cvtColor(_colorize(preds, color_map), cv2.COLOR_RGB2BGR)
 
             # Kombinovani prikaz
             combined = np.hstack([img_bgr, gt_colored, pred_colored])
