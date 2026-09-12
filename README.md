@@ -9,7 +9,7 @@ Sistem je dizajniran modularno: trening se radi jednom, offline, na jakom hardve
 
 ## Struktura projekta
 
-
+```
 MIPS-Projekat/
 ├── Dokumentacija/
 │   ├── Gantogram.gan, WBS.drawio.png, Product Backlog.pdf, project_charter.pdf
@@ -33,12 +33,12 @@ MIPS-Projekat/
     ├── main_onnx.py              # Isti tok, ONNX Runtime umesto PyTorch (simulira ARM)
     ├── train.py, dataset.py, prepare_data.py, evaluate.py
     ├── convert_deepglobe_masks.py  # Konverzija DeepGlobe RGB maski u ID-klase
-    ├── sample_demo_data.py       # Izvlači mali uzorak za brz prezentacijski demo
+    ├── sample_demo_data.py       # Izvlači mali uzorak za brz demo
     ├── config.yaml               # Glavna konfiguracija (pun trening)
-    ├── config_demo.yaml          # Laka konfiguracija (živi demo na prezentaciji)
+    ├── config_demo.yaml          # Laka konfiguracija (demo)
     ├── .gitignore
     └── requirements.txt
-
+```
 ---
 
 ## Uputstvo za instalaciju i pokretanje (Windows)
