@@ -1,7 +1,7 @@
 # MIPS Projekat
 Praćenje promene tipa zemljišta tokom vremena
 
-Sistem identifikuje promene na zemljištu (urbanizacija, krčenje šuma, ozelenjavanje) poređenjem dva snimka iste lokacije iz različitih vremenskih trenutaka (T1/T2) — ne samo klasifikacijom pojedinačnih slika, već poređenjem klasifikovanih tipova zemljišta na nivou piksela.
+Sistem identifikuje promene na zemljištu (urbanizacija, krčenje šuma, ozelenjavanje) poređenjem dva snimka (slike) iste lokacije iz različitih vremenskih trenutaka (T1/T2) — ne samo klasifikacijom pojedinačnih slika, već poređenjem klasifikovanih tipova zemljišta na nivou piksela.
 
 Sistem je dizajniran modularno: trening se radi jednom, offline, na jakom hardveru; primena (inferenca) je optimizovana za ARM platforme (Raspberry Pi / Jetson Nano).
 
@@ -9,18 +9,15 @@ Sistem je dizajniran modularno: trening se radi jednom, offline, na jakom hardve
 
 ## Struktura projekta
 
-```text
+
 MIPS-Projekat/
 ├── Dokumentacija/
 │   ├── Gantogram.gan, WBS.drawio.png, Product Backlog.pdf, project_charter.pdf
-│   ├── TIM.md              # Podela tima - ko šta zna da objasni na odbrani
-│   ├── SCRUM.md             # Primena Scrum metodologije, sprintovi, retrospektive
-│   └── priprema-*.md        # Individualni "skriptovi" odgovora za odbranu, po članu
 └── Kod/
     ├── data/
     │   ├── raw/                  # Puni dataset (van git-a, .gitignore)
     │   ├── processed/            # Tile-ovi za trening (van git-a)
-    │   ├── demo_raw/             # Mali uzorak (40 slika) - NA git-u, za brzi test/demo
+    │   ├── demo_raw/             # Mali uzorak (40 slika) - van git-a, generiše se lokalno
     │   ├── demo_processed/       # Tile-ovi demo uzorka (van git-a)
     │   └── test/                 # T1/T2 parovi za main.py (Google Earth snimci)
     ├── src/
@@ -41,7 +38,6 @@ MIPS-Projekat/
     ├── config_demo.yaml          # Laka konfiguracija (živi demo na prezentaciji)
     ├── .gitignore
     └── requirements.txt
-```
 
 ---
 
@@ -67,7 +63,7 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 
 ### 2. Priprema podataka
 
-Repo već sadrži mali demo uzorak (`data/demo_raw/`, 40 slika) za brzo testiranje. Za pun trening treba veći dataset — vidi sekciju "Priprema podataka" ispod.
+Repo NE sadrži gotov demo uzorak (`data/demo_raw/` nije na git-u — samo `data/test/` je) — generiše se lokalno u par sekundi, vidi sekciju "Brzi demo" ispod. Za pun trening treba veći dataset — vidi sekciju "Priprema podataka" ispod.
 
 ```powershell
 python prepare_data.py
@@ -114,16 +110,19 @@ Rezultati (heat-mapa, transition matrica, JSON izveštaj) se čuvaju u `results/
 
 ---
 
-## Brzi demo (za prezentaciju)
+## Brzi demo
 
-Repo sadrži poseban, potpuno odvojen tok za brz, živi prikaz treninga pred komisijom (par minuta, ne sati) — koristi mali uzorak podataka koji je već na git-u:
+Repo sadrži poseban, potpuno odvojen tok za brz, živi prikaz treninga. Uzorak podataka **nije** na git-u (samo kod je) — generiše se lokalno iz sirove DeepGlobe arhive (`data/deepglobe_raw/train/`, vidi sekciju "Priprema podataka" za izvor):
 
 ```powershell
+python sample_demo_data.py 40
 python prepare_data.py config_demo.yaml
 python train.py config_demo.yaml
 ```
 
-Ovo koristi `config_demo.yaml` (MobileNetV2, 3 epohe) i piše u potpuno odvojene putanje (`models_demo/`, `data/demo_processed/`) — **ne dira** pravi, pun trenirani model. Na prezentaciji, ovo se predstavlja eksplicitno kao demonstracija procesa, ne kao glavni rezultat — glavni rezultat je pun trening opisan ispod.
+`sample_demo_data.py` bira 40 nasumičnih parova direktno iz `data/deepglobe_raw/train/` (RGB `_sat.jpg`/`_mask.png` format) i konvertuje samo njih u `data/demo_raw/` — brže od konvertovanja svih 803 slika unapred. Isti `seed=42` garantuje da je izbor ponovljiv pri svakom pokretanju.
+
+`config_demo.yaml` (MobileNetV2, 3 epohe) piše u potpuno odvojene putanje (`models_demo/`, `data/demo_processed/`) — **ne dira** pravi, pun trenirani model. Na prezentaciji, ovo se predstavlja eksplicitno kao demonstracija procesa, ne kao glavni rezultat — glavni rezultat je pun trening opisan ispod.
 
 Opciono, ako želiš i da pokažeš ONNX export na demo modelu (ne obavezno za prezentaciju):
 ```powershell
@@ -222,7 +221,7 @@ Iz matrice se izvode imenovane metrike: `urbanization` (šuma/polje→beton), `d
 
 ## Članovi tima
 
-- Aleksandar Vuletić 36/2022 — arhitektura sistema i integracija
-- Mihailo Obradović 79/2022 — AI / mašinsko učenje
-- Aleksa Grujić 41/2022 — obrada slike i analiza promena
-- Nemanja Aleksić 27/2022 — deployment / edge (ARM)
+- Aleksandar Vuletić 36/2022 
+- Mihailo Obradović 79/2022 
+- Aleksa Grujić 41/2022 
+- Nemanja Aleksić 27/2022 
