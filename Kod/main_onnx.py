@@ -14,7 +14,7 @@ from src.visualization import create_visual_report, create_transition_heatmap, p
 
 
 def run_pipeline_onnx(img_path_old, img_path_new, onnx_model_path="models/best_model.onnx",
-                       output_dir="results"):
+                       output_dir="results", skip_registration=False):
     """
     ONNX ekvivalent run_pipeline iz main.py - ISTI tok (registracija -> segmentacija
     T1/T2 -> transition matrica -> heat-mapa/izvestaj), ali koristi ONNX Runtime
@@ -38,11 +38,22 @@ def run_pipeline_onnx(img_path_old, img_path_new, onnx_model_path="models/best_m
     class_names = load_class_names()
 
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Faza 3: Registracija i poravnanje...")
-    aligned_old, validation_view = reg_engine.register(img_path_old, img_path_new)
+    if skip_registration:
+        print("  (--skip-registration: slike se tretiraju kao već poravnate, npr. "
+              "Google Earth istorijski snimci sa zaključanim pogledom)")
+        aligned_old = cv2.imread(img_path_old)
+        if aligned_old is None:
+            print(f"Greška: Nije moguće učitati {img_path_old}")
+            return
+    else:
+        aligned_old, validation_view = reg_engine.register(img_path_old, img_path_new)
 
-    if aligned_old is None:
-        print("Greška: Registracija nije uspela. Proverite kvalitet snimaka.")
-        return
+        if aligned_old is None:
+            print(f"Greška: Registracija nije uspela. Razlog: {validation_view}")
+            print("Savet: ako su T1/T2 slike već poravnate po konstrukciji (npr. Google "
+                  "Earth sa zaključanim pogledom, samo menjana godina), probaj "
+                  "--skip-registration da preskočiš SIFT poravnanje.")
+            return
 
     img_new = cv2.imread(img_path_new)
 
@@ -109,6 +120,10 @@ if __name__ == "__main__":
     parser.add_argument("img_new", help="Putanja do novije (T2) slike")
     parser.add_argument("--model", default="models/best_model.onnx",
                          help="Putanja do ONNX modela (podrazumevano models/best_model.onnx)")
+    parser.add_argument("--skip-registration", action="store_true",
+                         help="Preskoci SIFT poravnanje - koristi kad su T1/T2 slike vec poravnate "
+                              "po konstrukciji (npr. Google Earth istorijski snimci sa zakljucanim pogledom)")
 
     args = parser.parse_args()
-    run_pipeline_onnx(args.img_old, args.img_new, onnx_model_path=args.model)
+    run_pipeline_onnx(args.img_old, args.img_new, onnx_model_path=args.model,
+                       skip_registration=args.skip_registration)
